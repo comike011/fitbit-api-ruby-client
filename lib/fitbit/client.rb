@@ -6,10 +6,9 @@ module Fitbit
     # @param [String] access_token: OAuth2 access token.
     # @param [String] refresh_token: OAuth2 refresh token.
     def initialize(client_id:, client_secret:, access_token:, refresh_token:, expires_at:)
-      secret = client_secret.gsub("\n", '')
-      @basic_token = Base64.strict_encode64("#{client_id}:#{secret}")
+      @basic_token = Base64.strict_encode64("#{client_id}:#{client_secret}").gsub("\n", '')
 
-      @oauth2_client = OAuth2::Client.new(client_id, secret,
+      @oauth2_client = OAuth2::Client.new(client_id, client_secret,
         authorize_url: 'https://www.fitbit.com/oauth2/authorize',
         token_url: 'https://api.fitbit.com/oauth2/token')
 
