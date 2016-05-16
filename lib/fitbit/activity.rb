@@ -125,10 +125,23 @@ module Fitbit
     # @note This is a beta feature. During this period, Fitbit may need to make backwards
     #   incompatible changes with less than 30 days notice.
     # @param [String] user_id: The encoded ID of the user. Use "-" (dash) for current logged-in user.
+    # @param [String] before_date: The date in the format yyyy-MM-ddTHH:mm:ss. Only yyyy-MM-dd is required. Either beforeDate or afterDate must be specified. Set sort to desc when using beforeDate.
+    # @param [String] after_date: The date in the format yyyy-MM-ddTHH:mm:ss. Only yyyy-MM-dd is required. Either beforeDate or afterDate must be specified. Set sort to asc when using afterDate.
+    # @param [String] sort: The sort order of entries by date. Required.  Use asc (ascending) when using afterDate. Use desc (descending) when using beforeDate.
+    # @param [String] limit: The max of the number of entries returned (maximum: 20). Required.
+    # @param [String] offset: This should always be set to 0. Required for now. IMPORTANT: To paginate, request the next and previous links in the pagination response object. Do not manually specify the offset parameter, as it will be removed in the future and your app will break.
     # @return [Hash] response data from Fitbit API
-    def activity_logs_list(user_id: '-')
-      return get("#{API_URI}/user/#{user_id}/activities/list.json")
+    def activity_logs_list(user_id: '-', before_date: nil, after_date: nil, sort: nil, limit: "20", offset: "0")
+      if before_date
+        query = { beforeDate: before_date, sort: "desc", limit: limit, offset: offset }.to_query
+      elsif after_date
+        query = { afterDate: after_date, sort: "asc", limit: limit, offset: offset }.to_query
+      else
+        raise StandardError
+      end
+      return get("#{API_URI}/user/#{user_id}/activities/list.json?#{query}")
     end
+
 
     # The Get Activity TCX endpoint retrieves the details of a user's location and heart rate
     # data during a logged exercise activity. The Training Center XML (TCX) is a data exchange
